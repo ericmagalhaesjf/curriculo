@@ -3,19 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Eric Magalhães - Profissional Multidisciplinar</title>
+    <title>Eric Magalhães - Desenvolvedor Full Stack</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
-            --primary: #2c3e50;
+            --primary: #05cca1;
             --secondary: #3498db;
             --accent: #2980b9;
             --light: #ecf0f1;
             --dark: #2c3e50;
             --text: #34495e;
             --background: #f8f9fa;
+            --error: #4829d4;
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -42,20 +44,24 @@
             align-items: center;
             text-align: center;
         }
+        .profile-container { position: relative; margin-bottom: 1.5rem; }
         .profile-pic {
             width: 150px;
             height: 150px;
             border-radius: 50%;
             object-fit: cover;
             border: 4px solid white;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
         }
+        .profile-pic:hover { transform: scale(1.05); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
         h1 {
             font-family: 'Montserrat', sans-serif;
             font-weight: 600;
             font-size: 2rem;
             margin-bottom: 0.5rem;
         }
-        .tagline { font-size: 1.1rem; opacity: .9; }
+        .tagline { font-weight: 400; opacity: 0.9; font-size: 1.1rem; }
         .contact-info {
             display: flex;
             flex-wrap: wrap;
@@ -63,176 +69,261 @@
             gap: 1.5rem;
             margin-top: 1.5rem;
         }
-        .contact-item {
-            display: flex;
-            align-items: center;
-            gap: .5rem;
-        }
+        .contact-item { display: flex; align-items: center; gap: 0.5rem; }
         .contact-icon { width: 20px; height: 20px; }
         .main-content { padding: 2rem; }
         h2 {
             font-family: 'Montserrat', sans-serif;
             color: var(--primary);
             border-bottom: 2px solid var(--secondary);
-            padding-bottom: .5rem;
+            padding-bottom: 0.5rem;
             margin: 2rem 0 1.5rem;
+            font-size: 1.5rem;
         }
-        h3 { color: var(--accent); margin: 1rem 0; }
+        h3 { font-family: 'Montserrat', sans-serif; color: var(--accent); margin: 1.2rem 0 0.8rem; font-size: 1.2rem; }
         p { margin-bottom: 1rem; text-align: justify; }
-        ul { padding-left: 1.2rem; }
-        .education-item, .job { margin-bottom: 1.5rem; }
-        .education-header, .job-header {
+        ul { padding-left: 1.2rem; margin-bottom: 1.5rem; }
+        li { margin-bottom: 0.5rem; }
+        .section { margin-bottom: 2.5rem; }
+        .job, .education-item { margin-bottom: 1.8rem; }
+        .job-header, .education-header {
             display: flex;
             justify-content: space-between;
             flex-wrap: wrap;
+            margin-bottom: 0.3rem;
         }
-        .education-title, .job-title { font-weight: 600; }
-        .education-period, .job-period {
-            font-style: italic;
-            color: #7f8c8d;
+        .job-title, .education-title {
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 1.1rem;
         }
-        .print-button {
-            display: block;
+        .job-period, .education-period { color: #7f8c8d; font-style: italic; }
+        .skills-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        .skill-category { background: var(--light); padding: 1rem; border-radius: 8px; }
+        .tag {
+            display: inline-block;
+            background: var(--secondary);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            margin: 0.3rem;
+            font-size: 0.85rem;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
             margin: 2rem auto;
-            padding: .8rem 1.8rem;
-            border: none;
-            border-radius: 30px;
+            flex-wrap: wrap;
+        }
+        .action-button {
+            display: block;
             background: var(--primary);
             color: white;
+            border: none;
+            padding: 0.8rem 1.8rem;
+            border-radius: 30px;
             cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            min-width: 180px;
+            text-align: center;
+        }
+        .action-button:hover { background: var(--accent); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+        .action-button.pdf { background: var(--error); }
+        .action-button.pdf:hover { background: #c0392b; }
+        a { color: var(--accent); text-decoration: none; transition: color 0.3s; }
+        a:hover { color: var(--primary); text-decoration: underline; }
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .header { padding: 1.5rem 1rem; }
+            .main-content { padding: 1.5rem; }
+            .contact-info { flex-direction: column; align-items: center; gap: 0.8rem; }
+            .skills-container { grid-template-columns: 1fr; }
         }
         @media print {
-            .print-button { display: none; }
-            body { background: white; }
-            .header { background: white; color: var(--dark); }
+            body { background: white; padding: 0; font-size: 12pt; }
+            .container { box-shadow: none; }
+            .header { background: white !important; color: var(--dark); padding: 1rem 0; }
+            .button-container { display: none; }
+            a { color: var(--dark); text-decoration: none; }
         }
     </style>
 </head>
-
 <body>
-<div class="container">
+    <div class="container">
+        <header class="header">
+            <div class="profile-container">
+                <img src="eric-magalhaes.jpg.jpg" alt="Eric Magalhães Rosa - Desenvolvedor Full Stack" class="profile-pic">
+            </div>
+            <h1>Eric Magalhães Rosa</h1>
+            <p class="tagline">Desenvolvedor Full Stack | Estagiário de Direito | Analista de Dados</p>
+            <div class="contact-info">
+                <div class="contact-item"><span>Juiz de Fora - MG</span></div>
+                <div class="contact-item"><span>ericmagalhaesjf@gmail.com</span></div>
+                <div class="contact-item"><span>(32) 98481-6011</span></div>
+                <div class="contact-item"><a href="https://www.linkedin.com/in/eric-magalh%C3%A3es-5ba50685/" target="_blank">linkedin.com/in/eric-magalhães</a></div>
+            </div>
+        </header>
+        <main class="main-content">
+            <section class="section">
+                <h2>Sobre Mim</h2>
+                <p>Desenvolvedor Full Stack com experiência em análise de dados e marketing digital. Atualmente conciliando carreira na tecnologia com graduação em Direito. Estagiário na Prefeitura de Juiz de Fora, atuando em apoio administrativo e jurídico, além de continuar trabalhando com certificação digital.</p>
+            </section>
+            <section class="section">
+                <h2>Formação Acadêmica</h2>
 
-<header class="header">
-    <img src="eric-magalhaes.jpg" alt="Eric Magalhães" class="profile-pic">
-    <h1>Eric Magalhães Rosa</h1>
-    <p class="tagline">Profissional Multidisciplinar | Administração & Tecnologia</p>
+                <div class="education-item">
+                    <div class="education-header">
+                        <p class="education-title">GRADUAÇÃO EM ADMINISTRAÇÃO</p>
+                        <p class="education-period">2024 - 2027 (Trancado)</p>
+                    </div>
+                    <p>Universidade Estácio de Sá</p>
+                </div>
 
-    <div class="contact-info">
-        <div class="contact-item">
-            <span>Juiz de Fora - MG</span>
-        </div>
-        <div class="contact-item">
-            <a href="mailto:ericmagalhaesjf@gmail.com">ericmagalhaesjf@gmail.com</a>
-        </div>
-        <div class="contact-item">
-            <a href="https://wa.me/5532984816011" target="_blank">(32) 98481-6011</a>
-        </div>
-        <div class="contact-item">
-            <a href="https://www.linkedin.com/in/eric-magalh%C3%A3es-5ba50685/" target="_blank">
-                linkedin.com/in/eric-magalhães
-            </a>
-        </div>
+                <div class="education-item">
+                    <div class="education-header">
+                        <p class="education-title">GRADUAÇÃO EM FÍSICA</p>
+                        <p class="education-period">2024 - 2027 (Trancado)</p>
+                    </div>
+                    <p>IF Sudeste MG</p>
+                </div>
+
+                <div class="education-item">
+                    <div class="education-header">
+                        <p class="education-title">CURSO TÉCNICO EM ANÁLISE DE SISTEMAS</p>
+                        <p class="education-period">2022 - 2026 (Concluído)</p>
+                    </div>
+                    <p>Proz Educação</p>
+                </div>
+
+                <div class="education-item">
+                    <div class="education-header">
+                        <p class="education-title">GRADUAÇÃO EM DIREITO</p>
+                        <p class="education-period">Em andamento</p>
+                    </div>
+                    <p>Faculdade Vianna Júnior</p>
+                </div>
+
+                <h3>Cursos Complementares</h3>
+                <ul>
+                    <li>Eneagrama (Desenvolvimento Pessoal)</li>
+                    <li>Desenvolvimento Web Full Stack</li>
+                    <li>Python para Análise de Dados</li>
+                    <li>Banco de Dados SQL e NoSQL</li>
+                    <li>Marketing Digital Avançado</li>
+                    <li>Google Ads e Facebook Ads</li>
+                </ul>
+            </section>
+            <section class="section">
+                <h2>Habilidades Técnicas</h2>
+                <div class="skills-container">
+                    <div class="skill-category"><h3>Front-end</h3><div><span class="tag">HTML5</span><span class="tag">CSS3</span><span class="tag">JavaScript</span><span class="tag">React</span><span class="tag">Bootstrap</span></div></div>
+                    <div class="skill-category"><h3>Back-end</h3><div><span class="tag">Python</span><span class="tag">PHP</span><span class="tag">Java</span><span class="tag">Node.js</span><span class="tag">Django</span></div></div>
+                    <div class="skill-category"><h3>Banco de Dados</h3><div><span class="tag">MySQL</span><span class="tag">PostgreSQL</span><span class="tag">MongoDB</span><span class="tag">SQLite</span></div></div>
+                    <div class="skill-category"><h3>Análise de Dados</h3><div><span class="tag">Pandas</span><span class="tag">NumPy</span><span class="tag">Power BI</span><span class="tag">Excel Avançado</span></div></div>
+                    <div class="skill-category"><h3>Marketing Digital</h3><div><span class="tag">Google Ads</span><span class="tag">Facebook Ads</span><span class="tag">Canva</span><span class="tag">SEO</span><span class="tag">Google Analytics</span></div></div>
+                    <div class="skill-category"><h3>Outras Ferramentas</h3><div><span class="tag">Git</span><span class="tag">WordPress</span><span class="tag">Photoshop</span><span class="tag">CorelDRAW</span></div></div>
+                </div>
+            </section>
+            <section class="section">
+                <h2>Experiência Profissional</h2>
+
+                <div class="job">
+                    <div class="job-header"><p class="job-title">PREFEITURA DE JUIZ DE FORA - SEDIC</p><p class="job-period">Estágio - Atual</p></div>
+                    <p><strong>Cargo:</strong> Estagiário</p>
+                    <p><strong>Principais atividades:</strong></p>
+                    <ul>
+                        <li>Apoio administrativo e organizacional</li>
+                        <li>Organização de documentos e arquivamento</li>
+                        <li>Atendimento interno e suporte às rotinas da Secretaria</li>
+                    </ul>
+                </div>
+
+                <div class="job">
+                    <div class="job-header"><p class="job-title">ALVO CERTIFICADO</p><p class="job-period">Abril 2023 - Atual</p></div>
+                    <p><strong>Cargo:</strong> Desenvolvedor Full Stack</p>
+                    <p><strong>Principais atividades:</strong>
+                        <ul>
+                            <li>Desenvolvimento de sistemas web para emissão de certificados digitais</li>
+                            <li>Automação de processos com Python</li>
+                            <li>Gestão de banco de dados MySQL</li>
+                        </ul>
+                    </p>
+                </div>
+                <div class="job">
+                    <div class="job-header"><p class="job-title">ACQIO</p><p class="job-period">Janeiro 2019 - Atual</p></div>
+                    <p><strong>Cargo:</strong> Franqueado & Desenvolvedor</p>
+                    <p><strong>Principais atividades:</strong>
+                        <ul>
+                            <li>Desenvolvimento de dashboards de análise comercial</li>
+                            <li>Automação de relatórios com Python e Power BI</li>
+                            <li>Gestão de equipe comercial</li>
+                        </ul>
+                    </p>
+                </div>
+                <div class="job">
+                    <div class="job-header"><p class="job-title">TECBYTE (Empreendimento Próprio)</p><p class="job-period">2016 - 2019</p></div>
+                    <p><strong>Cargo:</strong> Proprietário e Desenvolvedor</p>
+                    <p><strong>Principais atividades:</strong>
+                        <ul>
+                            <li>Desenvolvimento de sites para clientes</li>
+                            <li>Manutenção de hardware</li>
+                            <li>Gestão financeira e comercial</li>
+                            <li>Análise de dados de vendas</li>
+                        </ul>
+                    </p>
+                </div>
+            </section>
+        </main>
     </div>
-</header>
-
-<main class="main-content">
-
-<section>
-<h2>Sobre Mim</h2>
-<p>
-Sou Eric Magalhães, profissional com experiência multidisciplinar nas áreas administrativa e tecnológica.
-Atuei no Exército Brasileiro, no setor de Tecnologia da Informação e como empreendedor no ramo de informática,
-desenvolvendo habilidades técnicas, organizacionais e de atendimento.
-</p>
-</section>
-
-<section>
-<h2>Formação Acadêmica</h2>
-
-<div class="education-item">
-    <div class="education-header">
-        <p class="education-title">GRADUAÇÃO EM ADMINISTRAÇÃO</p>
-        <p class="education-period">2024 - 2027 (Trancado)</p>
+    <div class="button-container">
+        <button class="action-button" onclick="window.print()">Imprimir Currículo</button>
+        <button class="action-button pdf" id="downloadPdf">Baixar PDF</button>
     </div>
-    <p>Universidade Estácio de Sá</p>
-</div>
-
-<div class="education-item">
-    <div class="education-header">
-        <p class="education-title">GRADUAÇÃO EM FÍSICA</p>
-        <p class="education-period">2024 - 2027 (Trancado)</p>
-    </div>
-    <p>IF Sudeste MG</p>
-</div>
-
-<div class="education-item">
-    <div class="education-header">
-        <p class="education-title">CURSO TÉCNICO EM ANÁLISE DE SISTEMAS</p>
-        <p class="education-period">2023 - 2025 (Concluído)</p>
-    </div>
-    <p>Proz Educação</p>
-</div>
-
-<div class="education-item">
-    <div class="education-header">
-        <p class="education-title">GRADUAÇÃO EM DIREITO</p>
-        <p class="education-period">Em andamento</p>
-    </div>
-    <p>Faculdade Vianna Júnior</p>
-</div>
-</section>
-
-<section>
-<h2>Experiência Profissional</h2>
-
-<div class="job">
-    <div class="job-header">
-        <p class="job-title">PREFEITURA DE JUIZ DE FORA – SEDIC</p>
-        <p class="job-period">Estágio - Atual</p>
-    </div>
-    <p><strong>Função:</strong> Estagiário</p>
-    <p><strong>Principais atividades:</strong> Apoio administrativo, organização de documentos,
-    atendimento interno e suporte às rotinas da Secretaria de Desenvolvimento.</p>
-</div>
-
-<div class="job">
-    <div class="job-header">
-        <p class="job-title">ALVO CERTIFICADO</p>
-        <p class="job-period">2023 - Atual</p>
-    </div>
-    <p><strong>Função:</strong> Emissão de Certificado Digital</p>
-</div>
-
-<div class="job">
-    <div class="job-header">
-        <p class="job-title">ACQIO</p>
-        <p class="job-period">2019 - Atual</p>
-    </div>
-    <p><strong>Função:</strong> Franqueado</p>
-</div>
-
-<div class="job">
-    <div class="job-header">
-        <p class="job-title">TECBYTE</p>
-        <p class="job-period">2016 - 2019</p>
-    </div>
-    <p><strong>Função:</strong> Proprietário</p>
-</div>
-
-<div class="job">
-    <div class="job-header">
-        <p class="job-title">EXÉRCITO BRASILEIRO</p>
-        <p class="job-period">1 ano</p>
-    </div>
-    <p><strong>Função:</strong> Serviço Militar Obrigatório</p>
-</div>
-
-</section>
-
-</main>
-</div>
-
-<button class="print-button" onclick="window.print()">Imprimir Currículo</button>
+    <script>
+        document.getElementById('downloadPdf').addEventListener('click', async function() {
+            const btn = this;
+            btn.disabled = true;
+            btn.textContent = 'Gerando PDF...';
+            try {
+                const element = document.querySelector('.container');
+                const clone = element.cloneNode(true);
+                clone.querySelectorAll('*').forEach(el => {
+                    el.style.transform = 'none';
+                    el.style.transition = 'none';
+                    el.style.boxShadow = 'none';
+                });
+                const opt = {
+                    margin: [10, 5, 10, 5],
+                    filename: 'Curriculo-Eric-Magalhaes.pdf',
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, logging: true, useCORS: true, scrollX: 0, scrollY: 0, windowWidth: document.documentElement.scrollWidth, windowHeight: document.documentElement.scrollHeight },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true }
+                };
+                await new Promise(resolve => setTimeout(resolve, 300));
+                await html2pdf().set(opt).from(clone).save();
+            } catch (error) {
+                console.error('Erro ao gerar PDF:', error);
+                alert('Ocorreu um erro ao gerar o PDF. Por favor, tente novamente.');
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Baixar PDF';
+            }
+        });
+        window.onbeforeprint = function() {
+            document.querySelectorAll('.tag').forEach(tag => {
+                tag.style.backgroundColor = '#f0f0f0';
+                tag.style.color = '#000';
+            });
+        };
+    </script>
 </body>
 </html>
-
